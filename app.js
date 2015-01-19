@@ -10,7 +10,7 @@ function config($httpProvider, $stateProvider, $urlRouterProvider){
       abstract: true,
       templateUrl: 'partials/home.html',
       resolve: {
-        auth: function(apiService){
+        auth: function authorizeState(apiService){
           return apiService.authCheck();
         }
       }
@@ -29,15 +29,11 @@ function config($httpProvider, $stateProvider, $urlRouterProvider){
 }
 
 function run($rootScope, $state, sessionService, CONSTANTS){
-  init()
+  var cachedToken = localStorage.getItem(CONSTANTS.LOCALSTORAGE_TOKEN_KEY);
+  $rootScope.$on(CONSTANTS.EVENT_AUTH_FAIL, onAuthFail);
 
-  function init(){
-    var cachedToken = localStorage.getItem(CONSTANTS.LOCALSTORAGE_TOKEN_KEY);
-    $rootScope.$on(CONSTANTS.EVENT_AUTH_FAIL, onAuthFail);
-
-    if(cachedToken){
-      sessionService.setAuthToken(cachedToken);
-    }
+  if(cachedToken){
+    sessionService.setAuthToken(cachedToken);
   }
 
   function onAuthFail(){
@@ -56,7 +52,6 @@ function apiService($http, $rootScope, CONSTANTS){
     return $http.get(url).then(unwrapResponse, authFail)
 
     function authFail(error){
-      console.log(error);
       $rootScope.$broadcast(CONSTANTS.EVENT_AUTH_FAIL);
     }
   }
@@ -70,7 +65,6 @@ function apiService($http, $rootScope, CONSTANTS){
   /* ====== UTIL ====== */
 
   function apiFailure(error){
-    console.log(error);
     alert('API SERVICE ERROR');
   }
 
@@ -97,7 +91,6 @@ function sessionService(){
   session.setAuthToken = setAuthToken;
 
   function setAuthToken(token){
-    console.log('auth token set');
     session.authToken = token;
     localStorage.setItem(CONSTANTS.LOCALSTORAGE_TOKEN_KEY, token);
   }
