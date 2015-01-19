@@ -103,15 +103,6 @@ function sessionService(){
   }
 }
 
-function homeCtrl(){
-  var vm = this;
-
-  init();
-  
-  function init(){
-  }
-}
-
 function loginCtrl($state, apiService, sessionService){
   var vm = this;
 
@@ -136,10 +127,9 @@ angular
   .module('ng-auth-example', ['ui.bootstrap', 'ui.router'])
   .constant('CONSTANTS', CONSTANTS)
   .config(config)
-  .run(run)
   .factory('httpAuthInterceptor', httpAuthInterceptor)
   .service('apiService', apiService)
   .service('sessionService', sessionService)
   .controller('homeCtrl', homeCtrl)
   .controller('loginCtrl', loginCtrl)
-;
+  .run(run);
